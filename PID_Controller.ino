@@ -42,6 +42,7 @@ void loop() {
   //Calculates the error in the system
   double actualRpm = motorRPM;// from our rpm calc
   double error = setpoint - actualRPM;
+  cleanError = ema(error, previous);
   pidOutput = pid(error, dt);
 
   //Where voltage and direction get set
@@ -68,6 +69,7 @@ double pid(double error, double dt){
   integral += error * dt;
   
   //derivative finds the slope of the errors (Rough approx)
+  
   double derivative = (error - previous) / dt;
   //low pass filter
   previous = error;
@@ -76,7 +78,12 @@ double pid(double error, double dt){
   return output;
 }
 
+double ema(double error, double previous){
+  return error(0.4) * previous(0.6); 
+}
+
 //function that takes the direction, the pwrm, and the two motor pins and changes the speed of motor accordingly. 
+
 void setMotor(int dir, int pwmVal, int pwm, int in1, int in2){
   analogWrite(pwm,pwmVal);
   if(dir==1){ digitalWrite(in1,HIGH); digitalWrite(in2,LOW); }
