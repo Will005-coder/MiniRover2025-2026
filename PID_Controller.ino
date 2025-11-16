@@ -68,12 +68,16 @@ double pid(double error, double dt){
   integral += error * dt;
   
   //derivative finds the slope of the errors (Rough approx)
-  double derivative = (error - previous) / dt;
-  //low pass filter
-  previous = error;
+  cleanError = ema(error, previous)
+  double derivative = (cleanError - previous) / dt;
+  previous = cleanError;
   //Calculates new output
   double output = (Kp * proportional) + (Ki * integral) + (Kd * derivative);
   return output;
+}
+
+double ema(double error, double previous){
+  return (error - previous)0.4 + previous; 
 }
 
 //function that takes the direction, the pwrm, and the two motor pins and changes the speed of motor accordingly. 
